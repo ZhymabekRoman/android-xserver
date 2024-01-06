@@ -1,6 +1,5 @@
 package au.com.darkside.x11server;
 
-import android.view.ScaleGestureDetector;
 import android.view.MotionEvent;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -35,7 +34,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import au.com.darkside.xserver.ScaleGestureListenerImpl;
 import au.com.darkside.xserver.ScreenView;
 import au.com.darkside.xserver.XServer;
 
@@ -62,11 +60,8 @@ import android.content.res.Configuration;
  */
 public class XServerActivity extends Activity {
     private XServer _xServer;
-    private ScreenView _screenView;
+    private XServerScreen _screenView;
     private WakeLock _wakeLock;
-
-    private ScaleGestureListenerImpl scaleGestureDetector;
-
 
     private static final String NOTIFICATION_CHANNEL_DEFAULT = "default";
 
@@ -150,18 +145,9 @@ public class XServerActivity extends Activity {
 
         setAccessControl();
         FrameLayout fl = (FrameLayout) findViewById(R.id.frame);
-        /*
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int desiredHeight = displayMetrics.heightPixels;
-        int desiredWidth = displayMetrics.widthPixels;
-        */
-        _screenView = _xServer.getScreen();
 
-        _screenView.setOnScaleGestureListener(new ScaleGestureListenerImpl(_screenView));
-        
-        // FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(desiredWidth, desiredHeight);
-        // _screenView.setLayoutParams(params);
+        _screenView = new XServerScreen(this, _xServer.getScreen());
+ 
         fl.addView(_screenView);
 
         PowerManager pm;
@@ -200,15 +186,6 @@ public class XServerActivity extends Activity {
             }
         }
     }
-
-    // @Override
-                public boolean onScaler(ScaleGestureDetector detector) {
-                    float scaleFactor = detector.getScaleFactor();
-                    scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 5.0f));
-                    _screenView.setScaleX(scaleFactor);
-                    _screenView.setScaleY(scaleFactor);
-                    return true;
-                }
 
     /**
      * Called when the activity resumes.
